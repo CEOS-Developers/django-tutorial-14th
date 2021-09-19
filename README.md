@@ -1,1 +1,1 @@
-django-tutorial-14th
+django-tutorial-14thg
