@@ -84,7 +84,21 @@ class Choice(models.Model):
 ```
 ***
 ## Part 3
+### Django에서 view 함수의 반환값
+- `HttpResponse(data, content_type)` response를 반환하는 기본적인 함수
+- `render(request, template_name, 
+context=None, content_type=None, status=None, using=None)` template을 context와 엮어 httpResponse 를 반환
+- `redirect(to, permanent=False, *args, **kwargs)` url name을 주로 사용
+- `JsonResponse(data, encoder=DjangoJSONEncoder,
+             safe=True, json_dumps_params=None, 
+             **kwargs)` response를 커스텀해서 사용하고 싶을 때, 프론트엔드 개발자와 협의된 형식으로 메시지를 구성
 
+### HTML 소스에서 url 하드코딩 방지
+```html
+<a href="{% url 'detail' question.id %}">{{ question.question_text }}</a>
+'poll'이라는 namespace 사용
+<a href="{% url 'poll:detail' question.id %}">{{ question.question_text }}</a>
+```
 ***
 ## Part 4
 
