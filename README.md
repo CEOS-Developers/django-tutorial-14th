@@ -101,4 +101,11 @@ context=None, content_type=None, status=None, using=None)` template을 context�
 ```
 ***
 ## Part 4
+### 장고에서 폼(form) 사용하기
+- 폼에 데이터를 담아서 POST 메서드로 전송
+- request.POST['key']로 원하는 정보 추출
+- 데이터베이스에 적용
+
+### 제너릭 뷰
+장고에서 제공하는 일반적인 뷰 함수 => 짧은 코드 작성 가능
 
