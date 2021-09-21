@@ -1,5 +1,4 @@
 # django-tutorial-14th
-***
 ## Part 1
 ### 프로젝트 생성 및 앱 생성
 ```
@@ -49,7 +48,6 @@ http://127.0.0.1:8000/polls 입력하면 views.index 함수 실행
 include 함수를 통해 polls 이후의 url 패턴은 polls/urls.py 에서 매칭   
 url에 name 인수를 부여하여 name만으로 참조할 수 있도록 설계
 
-***
 
 ## Part 2
 - 장고에서 Model 사용법
@@ -82,7 +80,6 @@ class Choice(models.Model):
     def __str__(self):
         return self.choice_text
 ```
-***
 ## Part 3
 ### Django에서 view 함수의 반환값
 - `HttpResponse(data, content_type)` response를 반환하는 기본적인 함수
@@ -99,7 +96,6 @@ context=None, content_type=None, status=None, using=None)` template을 context�
 'poll'이라는 namespace 사용
 <a href="{% url 'poll:detail' question.id %}">{{ question.question_text }}</a>
 ```
-***
 ## Part 4
 ### 장고에서 폼(form) 사용하기
 - 폼에 데이터를 담아서 POST 메서드로 전송
