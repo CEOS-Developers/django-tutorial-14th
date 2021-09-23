@@ -1,5 +1,5 @@
 # django-tutorial-14th by Seungwoo Kim
-이 문서는 [장고 튜토리얼]("https://docs.djangoproject.com/ko/3.0/intro/tutorial01/") 을 진행하며 새로 알게 된 내용을 정리하기 위함입니다.
+이 문서는 [장고 튜토리얼]("https://docs.djangoproject.com/ko/3.0/intro/tutorial01/") 을 진행하며 새로 알게 된 내용을 정리하기 위해 작성했습니다.
 # Part 1
 ## 초기 프로젝트 디렉토리 생성
 - ```django-admin startproject mysite```라는 커맨드를 통해 프로젝트의 뼈대를 만든다.
@@ -66,7 +66,7 @@ urlpatterns = [
 ]
 # Notice! 두번째 인자인 views.~는 views.py 에 함수 형태로 정의된 view 이다.
 ```
-## 비즈니스 로직 작성하기 -> Shortcut으로!
+## 비즈니스 로직 작성하기 -> 결과를 Shortcut으로 손쉽게 리턴
 view 함수의 return 부분을 보면 HttpResponse로 보여질 view를 렌더링 했다.
 이 곳에 template.render 메소드를 인자로 넘겨주면 .html 파일을 렌더링 할 수 있다.
 이 때, html파일은 **polls/templates/polls/index.html**와 같은 구조에 선언한다.<br>
@@ -101,3 +101,72 @@ Template 파일(View html 파일)에서 url 값을 하드코딩하지 않고, po
 불러오는 방식으로 간략하게 쓸 수 있다. 하지만, 프로젝트가 커지면 Template 입장에선 어떤 프로젝트의 url name인지
 구분하기 힘든 문제가 있다(~~~.urls 에서 ~~~은 뭐지?). 따라서 최상단 route에 대한 namespace를 달아주어 이를
 해결할 수 있다.
+# Part4
+## form 작성법
+```html
+#polls/templates/polls/detail.html
+
+<form action="{% url 'polls:vote' question.id %}" method="post">
+{% csrf_token %}
+{% for choice in question.choice_set.all %}
+    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+{% endfor %}
+<input type="submit" value="Vote">
+</form>
+```
+- choice라는 이름으로(name) choice.id라는 값(value)를 전달한다.
+```python
+#polls/views.py
+
+def vote(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+    try:
+        selected_choice = question.choice_set.get(pk=request.POST['choice'])
+    except (KeyError, Choice.DoesNotExist):
+        return render(request, 'polls/detail.html', {
+            'question': question,
+            'error_message': "You didn't select a choice.",
+        })
+    else:
+        selected_choice.votes += 1
+        selected_choice.save() # DB에 변경사항 반영
+        return HttpResponseRedirect(reverse('polls:results', args=(question.id,))) # 리다이렉션
+```
+- request.POST['choice'] 로 전달받은 값을 추출한다.
+- try - except 구문을 이용해 예외처리가 가능하다
+
+## 제너릭 뷰 -> 간결한 코딩 가능
+```python
+# polls/views/py
+#...
+class IndexView(generic.ListView):
+    template_name = 'polls/index.html'
+    context_object_name = 'latest_question_list'
+
+    def get_queryset(self):
+        """Return the last five published questions."""
+        return Question.objects.order_by('-pub_date')[:5]
+
+
+class DetailView(generic.DetailView):
+    model = Question
+    template_name = 'polls/detail.html'
+#...
+```
+- class 형태로 정의된다.
+- template_name 에 렌더링 할 html 뷰 경로를 적어준다.
+- model 에 사용되는 db model(table)명을 적어준다.
+```python
+# polls/urls.py
+
+urlpatterns = [
+    path('', views.IndexView.as_view(), name='index'),
+    path('<int:pk>/', views.DetailView.as_view(), name='detail'),
+    path('<int:pk>/results/', views.ResultsView.as_view(), name='results'),
+    path('<int:question_id>/vote/', views.vote, name='vote'),
+]
+```
+기존에 index.html에 latest_question_list와 detail.html에 question 값을 직접 넘겨주었다.
+**DetailView**를 사용해 model에 question을 명시했기에, 저절로 값이 넘어간다. **ListView**를 사용한 IndexView에서는
+question_list가 넘어가지만, 그 명칭을 context_object_name으로 override 할 수 있다.
