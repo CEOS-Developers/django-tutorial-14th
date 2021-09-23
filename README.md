@@ -100,7 +100,7 @@ password를 password라고 쳤더니 너무 흔하다고 한다. (이런 detail�
 이전과 동일하게 views.py에 새로운 view들을 등록해주고, 인수를 받아서 question_id에 저장해준다.
 parameter, view, name을 path로 넘겨주고, 경로를 지정해준다.
 
-![html붙이지마](/Users/nowkim/Dev/ceosBack/django-tutorial-14th/images/2.png)
+![html붙이지마](/images/2.png)
 ...그렇다고 하네요
 `view`가 하는 일은 두 가지라고 한다.
  - HttpResponse 객체 반환
