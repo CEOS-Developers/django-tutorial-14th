@@ -1,30 +1,52 @@
-## 장고란?
+## HttpResponse
 
-파이썬으로 작성된 오픈소스 웹 애플리케이션 프레임워크다.
-장고에서 프로젝트를 생성하기 위해 `startproject`와 `startapp` 명령을 실행하면, 자동으로 프로젝트 틀을 잡아주는 디렉터리와 파일들을 만들어주기 때문에, 개발자들은 해당 내용을 채워넣기만 하면 된다.
+장고는 `request` 와 `response` 객체로 상태를 서버와 클라이언트가 주고 받는데, 아래와 같은 절차를 거친다.
 
-### MTV 패턴
+1. 특정 페이지가 Request 되면, 장고는 메타데이터를 포함하는 `HttpRequset`객체를 생성한다.
+2. 장고는 `urls.py`에서 정의한 특정 View 클래스/함수에 첫 번째 인자로 해당 `HttpRequest`객체를 전달.
+3. 해당 View는 결과값을 `HttpResponse`나 `JsonResponse` 객체에 담아 전달.
 
-장고의 디자인 패턴은 `Model - Template - View `이다. 나는 스위프트를 사용하여 MVC패턴을 많이 다루어 보았는데, 여기서 `Template = View`, `View = Controller` 라고 생각하면 된다.
 
-#### Model
-DB에 저장되는 데이터를 의미한다. 모델은 클래스로 정의되며, 하나의 클래스가 하나의 DB Table이다.
 
-#### Template
-유저에게 보여지는 화면이다. 위에서 언급했듯 MVC 패턴의 View에 해당한다.
-장고는 뷰에서 로직을 처리한 후 html파일을 `context`와 함께 **렌더링**하는데 이 때의 html파일을 템플릿이라고 한다.
+이를 위해서 장고는 `django.http` 모듈에서 `HttpRequest`와 `HttpResponse` API 를 제공하는 것이다.
 
-#### View
-MVC패턴의 컨트롤러에 해당하며, 요청에 따라 적절한 로직을 수행하며 결과를 템플릿으로 렌더링하여 응답한다.
+## Render
 
-이게 말이 좀 어려운데, 실제로 첫번째 장고 앱 작성하기 연습을 해보면 이해가 쉽다.
+공식 문서를 따라가다 보면, 단축 기능이라면서 `Render`를 소개해 주는데, 이게 뭔지 자세히 살펴보자.
 
-#### + URLConf
+`Render`는 `HttpResponse` 객체를 반환하는 함수로,  `template`을 `context`와 엮어서 `HttpResponse`객체로 쉽게 반환해 주는 함수라고 한다.
 
-장고에는 URLConf라는 단계가 하나 더 추가되어 있다.
-URL 패턴을 정의하여 해당 URL과 뷰를 매핑하는 단계라고 생각하면 된다.
-1.x 버전에서는 정규표현식을 사용했었는데, 2.x. 버전부터는 `path()`함수를 이용해 훨씬 매끄럽게 다룰 수 있다고 한다.
+이 함수의 기본형은 
 
-이 요소들을 그림으로 나타내면 다음과 같은데, 주로 우리는 녹색네모들을 다룬다고 생각하면 된다!
+```python
+render(request(필수), template_name(필수), 
+      context=None, content_type=None, 
+      status=None, using=None)
+```      
+이렇게 되어 있다.
+- template_name : 불러오고 싶은 템플릿 명을 적는다.  이전 함수에서 `loader.get_template()` 함수 안에 들어간 인자를 적으면 되는 것 같다.
+- context : View에서 사용하던 변수(Dict 자료형)를 html 템플릿에서 전달하는 역할을 한다. `key`값이 템플릿에서 사용할 변수 이름, ` value`값이 파이썬 변수가 된다.
 
-![장고 그림](https://images.velog.io/images/sossont/post/486e6a24-de5f-4137-8f3a-47fafbe9e2e5/django-content02.PNG)
+공식 문서에서 작성한 전체 코드를 보면서 비교해보자.
+
+
+```python
+from django.http import HttpResponse 
+
+def index(request):
+    latest_question_list = Question.objects.order_by('-pub_date')[:5]
+    template = loader.get_template('polls/index.html')
+    context = {
+        'latest_question_list': latest_question_list,
+    }
+    return HttpResponse(template.render(context, request))
+
+# 단축 기능 render.
+    latest_question_list = Question.objects.order_by('-pub_date')[:5]
+    context = {'latest_question_list' : latest_question_list}
+    return render(request, 'polls/index.html',context)
+```
+위에가 템플릿, 아래가 렌더를 사용한 코드인데, 비교해보니까 어느 요소가 어디에 들어갔는지가 눈에 확 띄는 것 같다. 확실히 코드 길이를 줄여주는 듯.
+
+### 참고 링크
+[joeylee.log](https://velog.io/@jcinsh/Django-request-response)
