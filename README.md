@@ -8,11 +8,15 @@
 
 
 
+
 ### 참고사항
 
 Format of commit message: "`**AngularJS git commit message convention**`"
 
-내용은 sukyeongs/django-tutorial-14th 레포에 Issues를 발행해놓았다.     
+내용은 sukyeongs/django-tutorial-14th 레포에 Issues를 발행해놓았다.
+(https://github.com/sukyeongs/django-tutorial-14th/issues/1)
+
+
 
 
 
