@@ -89,7 +89,7 @@ Choice.objects.filter(question__pub_date__year=2021)
 # 관리자 계정 생성
 python manage.py createsuperuser
 ```
-![admin create](/Users/nowkim/Dev/ceosBack/django-tutorial-14th/images/1.png)
+![admin create](/images/1.png)
 password를 password라고 쳤더니 너무 흔하다고 한다. (이런 detail을 보면 너무 귀엽다)
 그래도 그냥 만들거냐고 묻는데 테스트니까 그냥 만든다.
 
