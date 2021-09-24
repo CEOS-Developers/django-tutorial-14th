@@ -32,6 +32,53 @@ $ python manage.py startapp polls
 $ python manage.py runserver {portnumber}
 ```
 
+## Secret Key
+`setting.py` 에는 secret key가 존재한다.  
+이를 public한 저장소에 커밋하게 되면 보안적인 이슈가 발생할 수 있으므로, json 파일에 변수로 설정하고 불러들이는 방법을 사용할 수 있다.
+```gitignore
+# Secret Key
+secrets.json
+```
+먼저 secret키를 Json 변수로 담은 파일을 예외처리 해주어야 한다.
+
+```json
+{
+  "SECRET_KEY" : "b_4(!id8ro!1645n@ub55555hbu93gaia0 {my_secret_key}"
+}
+```
+다음과 같이 json 파일을 만들어준다.
+
+```python
+# mysite/settings.py
+
+# before
+SECRET_KEY = {my_secret_key}
+
+# after
+import os, json
+from django.core.exceptions import ImproperlyConfigured
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+secret_file = os.path.join(BASE_DIR, 'mysite', 'secrets.json')
+
+with open(secret_file) as f:
+    secrets = json.loads(f.read())
+
+
+def get_secret(setting, secrets=secrets):
+    try:
+        return secrets[setting]
+    except KeyError:
+        error_msg = "Set the {} environment variable".format(setting)
+        raise ImproperlyConfigured(error_msg)
+
+
+SECRET_KEY = get_secret("SECRET_KEY")
+```
+`settings.py`의 SECRET_KEY 부분을 다음과 같이 수정해준다.  
+secret_file의 경로에 'mysite'를 넣어주었는데, 절대경로로 만들고 싶은데 아직 파이썬이 익숙치않아서 모르겠다.
+
 ## URLConf
 ```python
 # mysite/urls.py
