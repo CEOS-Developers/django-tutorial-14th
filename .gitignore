@@ -130,6 +130,6 @@ dmypy.json
 .idea
 .xml
 
-# secret key & migrations
+# secret kgit originey & migrations
 migrations/
 settings.py
