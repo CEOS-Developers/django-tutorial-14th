@@ -129,3 +129,7 @@ dmypy.json
 .pyre/
 .idea
 .xml
+
+# secret kgit originey & migrations
+migrations/
+settings.py
